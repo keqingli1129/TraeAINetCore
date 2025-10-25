@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +16,28 @@ builder.Services.AddDefaultIdentity<Microsoft.AspNetCore.Identity.IdentityUser>(
     options.SignIn.RequireConfirmedAccount = false;
 })
 .AddEntityFrameworkStores<WebAppMVC.Data.ApplicationDbContext>();
+
+var azureAd = builder.Configuration.GetSection("AzureAd");
+
+builder.Services.AddAuthentication()
+    .AddOpenIdConnect("AzureAD", "Microsoft Entra ID", options =>
+    {
+        var instance = azureAd["Instance"] ?? "https://login.microsoftonline.com/";
+        var tenantId = azureAd["TenantId"] ?? "common";
+        options.Authority = $"{instance.TrimEnd('/')}/{tenantId}/v2.0";
+        options.ClientId = azureAd["ClientId"] ?? string.Empty;
+        options.ClientSecret = azureAd["ClientSecret"] ?? string.Empty;
+        options.ResponseType = "code";
+        options.UsePkce = true;
+        options.SaveTokens = true;
+        options.CallbackPath = azureAd["CallbackPath"] ?? "/signin-azuread";
+        options.SignInScheme = IdentityConstants.ExternalScheme;
+        options.Scope.Clear();
+        options.Scope.Add("openid");
+        options.Scope.Add("profile");
+        options.Scope.Add("email");
+        options.TokenValidationParameters.NameClaimType = "name";
+    });
 
 var app = builder.Build();
 
