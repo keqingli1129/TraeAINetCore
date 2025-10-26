@@ -23,7 +23,9 @@ else
         <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/ExternalLogin" asp-route-provider="AzureAD">Login with Microsoft Entra ID</a>
+        <form class="form-inline" asp-area="Identity" asp-page="/Account/ExternalLogin" asp-route-provider="AzureAD" asp-route-returnUrl="/" method="post">
+            <button type="submit" class="nav-link btn btn-link text-dark">Login with Microsoft Entra ID</button>
+        </form>
     </li>
 }
 </ul>
