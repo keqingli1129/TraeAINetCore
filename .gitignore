@@ -53,3 +53,5 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 
+WebAppMVC/app.db-shm
+WebAppMVC/app.db-wal
